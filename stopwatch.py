@@ -114,8 +114,9 @@ while running_game:
                                 progress = 0
                             else:
                                 progress = ((elapsed_time - previous_time) / previous_time) * 100
-                            progress = round(progress, 2)
-
+                            progress = int(progress)  # Remove decimal places
+                            #progress = round(progress, 0) # Alternative rounding
+                            #progress = int(round(progress)) # Alternative rounding
 
                         previous_time = elapsed_time
                         running = False
@@ -151,7 +152,7 @@ while running_game:
         else:
             progress_color = red # Show green for improvement
 
-        progress_text = font.render(f"{progress:.2f}%", True, progress_color)
+        progress_text = font.render(f"{progress}%", True, progress_color) # Removed {:.2f}
         progress_rect = progress_text.get_rect(center=(width // 2, 100))
         screen.blit(progress_text, progress_rect)
 
