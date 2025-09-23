@@ -8,23 +8,27 @@ pygame.init()
 # Window dimensions
 width, height = 150, 130
 screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Stopwatch with Button and Progress")
+pygame.display.set_caption("stopwatch.py")
 
 # Colors
 white = (255, 255, 255)
 black = (0, 0, 0)
 gray = (200, 200, 200)
-red = (255, 0, 0)
-green = (0, 255, 0)
+red = (178, 0, 0)
+green = (0, 178, 0)
+light_gray = (220, 220, 220)
+#dark_gray = (80, 80, 80)
 
 # Font (Smaller size)
-font = pygame.font.Font(None, 20)
+#font = pygame.font.Font(None, 18)
+#font = pygame.font.SysFont('Unifont Smooth', 18)
+font = pygame.font.Font(None, 22)
 
 # Button
-button_rect = pygame.Rect(25, 20, 100, 30)
-button_color = gray
-button_text_str = "Start"
+button_rect = pygame.Rect(25, 13, 100, 30)
+button_color = light_gray
 button_text_color = black
+button_text_str = "Start"
 
 # Stopwatch variables
 start_time = 0
@@ -95,7 +99,6 @@ while running_game:
                         button_color = red
                         button_text_str = "Stop"
                         button_text_color = white
-
                         if previous_time is not None:
                             progress = None
 
@@ -103,7 +106,70 @@ while running_game:
                         start_time = time.time()
                     else:
                         # Stop the stopwatch
-                        button_color = gray
+                        button_text_color = black
+                        button_color = light_gray
+                        button_text_str = "Start"
+                        elapsed_time = time.time() - start_time
+                        save_result(elapsed_time)
+
+                        if previous_time is not None:
+                            if previous_time == 0:
+                                progress = 0
+                            else:
+                                progress = ((elapsed_time - previous_time) / previous_time) * 100
+                            progress = int(progress)  # Remove decimal places
+                            #progress = round(progress, 0) # Alternative rounding
+                            #progress = int(round(progress)) # Alternative rounding
+
+                        previous_time = elapsed_time
+                        running = False
+
+
+
+    # Update time
+    if running:
+        elapsed_time = time.time() - start_time
+
+    # Drawing
+    screen.fill(white)
+
+    # Button Shadows 
+    #pygame.draw.line(screen, light_gray, (button_rect.x, button_rect.y), (button_rect.x + button_rect.width, button_rect.y), 3)
+    #pygame.draw.line(screen, light_gray, (button_rect.x, button_rect.y), (button_rect.x, button_rect.y + button_rect.height), 3)
+    #pygame.draw.line(screen, dark_gray, (button_rect.x, button_rect.y + button_rect.height), (button_rect.x + button_rect.width, button_rect.y + button_rect.height), 3)
+    #pygame.draw.line(screen, dark_gray, (button_rect.x + button_rect.width, button_rect.y), (button_rect.x + button_rect.width, button_rect.y + button_rect.height), 3)
+
+    # Button
+    pygame.draw.rect(screen, button_color, button_rect)
+    button_text = font.render(button_text_str, True, button_text_color)
+    button_text_rect = button_text.get_rect(center=button_rect.center)
+    screen.blit(button_text, button_text_rect)
+
+    # Stopwatch
+    draw_time(screen, elapsed_time, 60, black, font)
+
+    # Previous time
+    if previous_time is not None:
+        draw_time(screen, previous_time, 80, gray, font)
+
+
+    # Progress
+    progress_color = black
+    if progress is not None:
+        if progress > 0:
+            progress_color = green # Show red for worsening
+        else:
+            progress_color = red # Show green for improvement
+
+        progress_text = font.render(f"{progress}%", True, progress_color) # Removed {:.2f}
+        progress_rect = progress_text.get_rect(center=(width // 2, 100))
+        screen.blit(progress_text, progress_rect)
+
+    # Update the screen
+    pygame.display.flip()
+
+# Quit Pygame
+pygame.quit()                        button_color = gray
                         button_text_str = "Start"
                         button_text_color = black
                         elapsed_time = time.time() - start_time
